@@ -1,35 +1,35 @@
 {
-  "name": "blogger",
-  "version": "1.0.0",
-  "description": "Api for MERN Stack Blog web-app",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon server.ts"
-  },
-  "keywords": [
-    "express",
-    "api"
-  ],
-  "author": "Yogesh M <mahajanyogesh@gmail.com>",
-  "license": "ISC",
-  "devDependencies": {
-    "@eslint/js": "^9.11.1",
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^5.0.0",
-    "@types/http-errors": "^2.0.4",
-    "@types/node": "^22.7.4",
-    "eslint": "^9.11.1",
-    "globals": "^15.9.0",
-    "nodemon": "^3.1.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.2",
-    "typescript-eslint": "^8.8.0"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0",
-    "http-error": "^0.0.6",
-    "http-errors": "^2.0.0",
-    "mongoose": "^8.7.0"
-  }
+    "name": "blogger",
+    "version": "1.0.0",
+    "description": "Api for MERN Stack Blog web-app",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon server.ts"
+    },
+    "keywords": [
+        "express",
+        "api"
+    ],
+    "author": "Yogesh M <mahajanyogesh443@gmail.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "@eslint/js": "^9.11.1",
+        "@types/dotenv": "^8.2.0",
+        "@types/express": "^5.0.0",
+        "@types/http-errors": "^2.0.4",
+        "@types/node": "^22.7.4",
+        "eslint": "^9.11.1",
+        "globals": "^15.9.0",
+        "nodemon": "^3.1.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.2",
+        "typescript-eslint": "^8.8.0"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.21.0",
+        "http-error": "^0.0.6",
+        "http-errors": "^2.0.0",
+        "mongoose": "^8.7.0"
+    }
 }
