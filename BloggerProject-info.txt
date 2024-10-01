@@ -1,0 +1,20 @@
+---------------------------------------------------------------------------------------------------------------------------------------
+FIGMA TEMPLATE TO FOLLOW  =>
+
+https://www.figma.com/design/slH7S3upOtCOdPokiJfYSZ/Free-Blog-Template--%7C-Modern-%26-Creative-design-(Community)?node-id=1-2&node-type=canvas&t=nkovbVX7xTAXnW1F-0
+
+https://www.figma.com/design/UvearRBC7Et01okJ5AlOM8/Free-Blog-Website-Template-(Community)?node-id=1-410&node-type=canvas&t=ajk9ShYSE36JLvyW-0
+---------------------------------------------------------------------------------------------------------------------------------------
+TECH STACK  =>
+
+NEXT JS
+TYPESCRIPT
+EXPRESS
+MONGOOSE
+OTHERS...
+---------------------------------------------------------------------------------------------------------------------------------------
+PROJECT STEPS =>
+
+Complete TypeScript
+Create API for Blogger
+Start Front end work
