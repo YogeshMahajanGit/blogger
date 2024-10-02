@@ -15,7 +15,6 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
         //pass error
         return next(error);
     }
-
     // Database call.
     try {
         const userName = await userModel.findOne({ name });
@@ -58,4 +57,40 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export { createUser };
+async function loginUser(req: Request, res: Response, next: NextFunction) {
+    const { email, password } = req.body;
+
+    // Validation
+    if (!email || !password) {
+        return next(createHttpError(400, "All fields are required."));
+    }
+
+    // Database call
+    let user;
+    try {
+        user = await userModel.findOne({ email });
+        if (!user) {
+            return next(createHttpError(404, "User not found."));
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return next(
+                createHttpError(400, "Username or password incorrect!")
+            );
+        }
+    } catch (error) {
+        return next(createHttpError(500, "Error while getting user"));
+    }
+
+    //Create accesstoken
+    try {
+        const token = sign({ sub: user._id }, config.jwtSecret as string, {
+            algorithm: "HS256",
+        });
+        res.json({ accessToken: token });
+    } catch (error) {
+        return next(createHttpError(500, "Error while loging the  token"));
+    }
+}
+export { createUser, loginUser };
