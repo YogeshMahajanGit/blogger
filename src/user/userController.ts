@@ -18,16 +18,17 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 
     // Database call.
     try {
+        const userName = await userModel.findOne({ name });
         const user = await userModel.findOne({ email });
-        if (user) {
+        if (user || userName) {
             const error = createHttpError(
                 400,
-                "User already exists with this email."
+                "User already exists with this email,userName"
             );
             return next(error);
         }
     } catch (err) {
-        return next(createHttpError(500, "Error while getting user"));
+        return next(createHttpError(500, `Error while getting user`));
     }
 
     // / password -> bcrypt - hash
