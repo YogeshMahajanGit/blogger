@@ -68,4 +68,10 @@ async function createBlogPost(
     }
 }
 
-export { createBlogPost };
+async function updateBlogPost(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {}
+
+export { createBlogPost, updateBlogPost };
