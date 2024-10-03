@@ -3,6 +3,7 @@ import { S3, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
 import { config } from "../config/config";
 import createHttpError from "http-errors";
 import BlogPost from "./blogModel";
+import { AuthRequest } from "../middlewares/authenticate";
 
 // Initialize S3 client
 const s3 = new S3({
@@ -33,7 +34,6 @@ async function createBlogPost(
             Body: file.buffer,
             ContentType: file.mimetype,
         };
-
         const command = new PutObjectCommand(params);
         await s3.send(command);
         return key;
@@ -45,14 +45,15 @@ async function createBlogPost(
         // Construct the image URL
         const imageUrl = `https://my-blogger-images.s3.${config.region}.amazonaws.com/${key}`;
 
+        //Type-cast
+        const _req = req as AuthRequest;
+
         //Create New Blog Post
-        //@ts-ignore
-        console.log("UserId :", req.userId);
         const newBlogPost = await BlogPost.create({
             title,
             content,
             category,
-            blogger: "66fcca09f7aa79280f508bc3",
+            blogger: _req.userId,
             coverImage: imageUrl,
             comments,
         });
@@ -64,16 +65,6 @@ async function createBlogPost(
     } catch (error) {
         console.error("Error creating blog post:", error);
         return next(createHttpError(500, "Error while creating blog"));
-
-        // if (error instanceof Error) {
-        //     res.status(500).json({
-        //         error: `Failed to upload image: ${error.message}`,
-        //     });
-        // } else {
-        //     res.status(500).json({
-        //         error: "Failed to upload image due to an unknown error",
-        //     });
-        // }
     }
 }
 
