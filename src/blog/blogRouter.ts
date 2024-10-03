@@ -1,8 +1,7 @@
 import express from "express";
 import multer from "multer";
-// import path from "node:path";
 import { createBlogPost } from "./blogController";
-
+import authenticate from "../middlewares/authenticate";
 const blogRouter = express.Router();
 
 //Routes
@@ -12,6 +11,6 @@ const upload = multer({
     limits: { fileSize: 3e7 }, //3e7 -> 30 MB
 });
 
-blogRouter.post("/", upload.single("coverImage"), createBlogPost);
+blogRouter.post("/", authenticate, upload.single("coverImage"), createBlogPost);
 
 export default blogRouter;

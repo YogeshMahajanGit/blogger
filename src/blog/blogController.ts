@@ -19,7 +19,6 @@ async function createBlogPost(
     next: NextFunction
 ): Promise<void> {
     const { title, content, blogger, category, comments } = req.body;
-
     // Check if file is present
     if (!req.file) {
         res.status(400).json({ error: "No image file uploaded" });
@@ -47,8 +46,9 @@ async function createBlogPost(
         const imageUrl = `https://my-blogger-images.s3.${config.region}.amazonaws.com/${key}`;
 
         //Create New Blog Post
+        //@ts-ignore
+        console.log("UserId :", req.userId);
         const newBlogPost = await BlogPost.create({
-            //66fcca09f7aa79280f508bc3
             title,
             content,
             category,
