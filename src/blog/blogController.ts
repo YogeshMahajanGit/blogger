@@ -15,31 +15,39 @@ const s3 = new S3({
     },
 });
 
-async function handleUploadImageToAWS(req: Request, res: Response) {
-    // Check if file is present
-    if (!req.file) {
-        res.status(400).json({ error: "No image file uploaded" });
-        return;
-    }
-    // Upload Function to S3
-    const uploadToS3 = async (file: Express.Multer.File) => {
-        const key = `${Date.now()}_${file.originalname}`;
-        const params = {
-            Bucket: "my-blogger-images",
-            Key: key,
-            Body: file.buffer,
-            ContentType: file.mimetype,
+async function handleUploadImageToAWS(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        // Check if file is present
+        if (!req.file) {
+            res.status(400).json({ error: "No image file uploaded" });
+            return;
+        }
+        // Upload Function to S3
+        const uploadToS3 = async (file: Express.Multer.File) => {
+            const key = `${Date.now()}_${file.originalname}`;
+            const params = {
+                Bucket: "my-blogger-images",
+                Key: key,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            };
+            const command = new PutObjectCommand(params);
+            await s3.send(command);
+            return key;
         };
-        const command = new PutObjectCommand(params);
-        await s3.send(command);
-        return key;
-    };
-    // Upload the image to AWS S3
-    const key = await uploadToS3(req.file);
-    // Construct the image URL
-    const imageUrl = `https://my-blogger-images.s3.${config.region}.amazonaws.com/${key}`;
+        // Upload the image to AWS S3
+        const key = await uploadToS3(req.file);
+        // Construct the image URL
+        const imageUrl = `https://my-blogger-images.s3.${config.region}.amazonaws.com/${key}`;
 
-    return imageUrl;
+        return imageUrl;
+    } catch (error) {
+        return next(createHttpError(500, "Error during image upload process"));
+    }
 }
 
 async function createBlogPost(
@@ -50,7 +58,11 @@ async function createBlogPost(
     const { title, content, category, comments } = req.body;
 
     try {
-        const imageUrl = await handleUploadImageToAWS(req, res);
+        const imageUrl = await handleUploadImageToAWS(req, res, next);
+
+        if (!imageUrl) {
+            return next(createHttpError(400, "No image provide"));
+        }
 
         //Type-cast
         const _req = req as AuthRequest;
@@ -75,14 +87,12 @@ async function createBlogPost(
     }
 }
 
-// "id": "66fedc91e096c77f3e69a73a"
 async function updateBlogPost(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     const { title, content, category } = req.body;
-
     const id = req.params.id;
 
     // Check if post is present
@@ -101,8 +111,6 @@ async function updateBlogPost(
 
     let updateCoverImage = "";
     if (req?.file) {
-        console.log("imgae change");
-
         //Delete the old image from S3
         const deleteFromS3 = async (key: string) => {
             const params = {
@@ -113,17 +121,36 @@ async function updateBlogPost(
             const command = new DeleteObjectCommand(params);
             return s3.send(command);
         };
-
+        //get key (oldImageKey)
         const oldImageKey = blogPost.coverImage.split("/").pop();
-        console.log(oldImageKey);
+
         await deleteFromS3(oldImageKey as string);
 
-        updateCoverImage = (await handleUploadImageToAWS(req, res)) as string;
-
-        console.log({ "Upadted newImageKey": updateCoverImage });
+        //update new image
+        updateCoverImage = (await handleUploadImageToAWS(
+            req,
+            res,
+            next
+        )) as string;
     }
-
-    res.json("update");
+    //Update Blog Post
+    const updateBlogPost = await BlogPost.findOneAndUpdate(
+        {
+            _id: id,
+        },
+        {
+            title,
+            content,
+            category,
+            coverImage: updateCoverImage
+                ? updateCoverImage
+                : blogPost.coverImage,
+        },
+        {
+            new: true,
+        }
+    );
+    res.json({ "update post: ": updateBlogPost });
 }
 
 export { createBlogPost, updateBlogPost };
