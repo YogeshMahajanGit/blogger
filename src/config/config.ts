@@ -1,5 +1,4 @@
 import { config as conf } from "dotenv";
-import AWS from "aws-sdk";
 conf();
 
 const _config = {
@@ -9,9 +8,8 @@ const _config = {
     jwtSecret: process.env.JWT_SECRET,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: "us-east-1", // or your bucket's region
+    region: process.env.AWS_REGION,
 };
-// // Create an S3 instance
-// const s3 = new AWS.S3();
+
 //Read only
 export const config = Object.freeze(_config);

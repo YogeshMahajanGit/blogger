@@ -1,15 +1,17 @@
 import express from "express";
-import { createBlogPost } from "./blogController";
 import multer from "multer";
-import path from "node:path";
+// import path from "node:path";
+import { createBlogPost } from "./blogController";
 
 const blogRouter = express.Router();
 
+//Routes
+const storage = multer.memoryStorage();
 const upload = multer({
-    dest: path.resolve(__dirname, "../../public/data/uploads"),
+    storage: storage,
     limits: { fileSize: 3e7 }, //3e7 -> 30 MB
 });
-//routes
+
 blogRouter.post("/", upload.single("coverImage"), createBlogPost);
 
 export default blogRouter;
