@@ -2,7 +2,8 @@ import express from "express";
 import multer from "multer";
 import {
     createBlogPost,
-    getSinglePost,
+    deleteBlog,
+    getSingleBlog,
     listAllBlogs,
     updateBlogPost,
 } from "./blogController";
@@ -26,6 +27,8 @@ blogRouter.patch(
 );
 
 blogRouter.get("/", listAllBlogs);
-blogRouter.get("/:id", getSinglePost);
+blogRouter.get("/:id", getSingleBlog);
+
+blogRouter.delete("/:id", authenticate, deleteBlog);
 
 export default blogRouter;

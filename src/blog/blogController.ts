@@ -174,18 +174,68 @@ async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-async function getSinglePost(req: Request, res: Response, next: NextFunction) {
+async function getSingleBlog(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
 
     try {
-        const post = await BlogPost.findOne({ _id: id });
-        if (!post) {
+        const blog = await BlogPost.findOne({ _id: id });
+        if (!blog) {
             return next(createHttpError(404, "Post not found"));
         }
 
-        res.json(post);
+        res.json(blog);
     } catch (error) {
-        return next(createHttpError(500, "Error while getting post"));
+        return next(createHttpError(500, "Error while getting blog"));
     }
 }
-export { createBlogPost, updateBlogPost, listAllBlogs, getSinglePost };
+
+async function deleteBlog(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    const id = req.params.id;
+
+    const blogPost = await BlogPost.findOne({ _id: id });
+    if (!blogPost) {
+        return next(createHttpError(404, "Post not found"));
+    }
+
+    //Check access
+    const _req = req as AuthRequest;
+    if (blogPost.blogger.toString() !== _req.userId) {
+        return next(createHttpError(403, "You can not delete."));
+    }
+
+    // Delete the  image from S3
+    try {
+        const deleteFromS3 = async (key: string) => {
+            const params = {
+                Bucket: "my-blogger-images",
+                Key: key,
+            };
+            const command = new DeleteObjectCommand(params);
+            return s3.send(command);
+        };
+        //get key
+        const imageKey = blogPost.coverImage.split("/").pop();
+
+        await deleteFromS3(imageKey as string);
+
+        //delete blog from DB
+        await BlogPost.deleteOne({ _id: id });
+    } catch (error) {
+        next(createHttpError(500, "Error while delete blog"));
+    }
+
+    res.sendStatus(204);
+    return;
+}
+
+export {
+    createBlogPost,
+    updateBlogPost,
+    listAllBlogs,
+    getSingleBlog,
+    deleteBlog,
+};
