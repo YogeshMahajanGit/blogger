@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { S3, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
+import { S3, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { config } from "../config/config";
 import createHttpError from "http-errors";
-import BlogPost from "./blogModel";
 import { AuthRequest } from "../middlewares/authenticate";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import BlogPost from "./blogModel";
+import { json } from "stream/consumers";
+import { createDeflate } from "zlib";
 
 // Initialize S3 client
+// put in helper function
 const s3 = new S3({
     region: config.region,
     credentials: {
@@ -153,4 +156,22 @@ async function updateBlogPost(
     res.json({ "update post: ": updateBlogPost });
 }
 
-export { createBlogPost, updateBlogPost };
+async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
+    try {
+        const list = await BlogPost.find(req.query).sort({ createdAt: -1 });
+
+        // add pagination
+        // let page = Number(req.query.page) || 1;
+        // let limit = Number(req.query.limit) || 2;
+
+        // let skip = (page - 1) * limit;
+
+        // // list = list.skip(skip);
+
+        res.json({ list, length: list.length });
+    } catch (err) {
+        return next(createHttpError(500, "Erorr while getting a blog"));
+    }
+}
+
+export { createBlogPost, updateBlogPost, listAllBlogs };

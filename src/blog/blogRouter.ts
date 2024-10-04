@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { createBlogPost, updateBlogPost } from "./blogController";
+import { createBlogPost, listAllBlogs, updateBlogPost } from "./blogController";
 import authenticate from "../middlewares/authenticate";
 const blogRouter = express.Router();
 
@@ -19,5 +19,7 @@ blogRouter.patch(
     upload.single("coverImage"),
     updateBlogPost
 );
+
+blogRouter.get("/", listAllBlogs);
 
 export default blogRouter;
