@@ -3,6 +3,7 @@ import multer from "multer";
 import {
     createBlogPost,
     deleteBlog,
+    generateBlog,
     getSingleBlog,
     listAllBlogs,
     updateBlogPost,
@@ -30,5 +31,7 @@ blogRouter.get("/", listAllBlogs);
 blogRouter.get("/:id", getSingleBlog);
 
 blogRouter.delete("/:id", authenticate, deleteBlog);
+
+blogRouter.post("/generate-blog", authenticate, generateBlog);
 
 export default blogRouter;

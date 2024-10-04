@@ -5,11 +5,9 @@ import { config } from "../config/config";
 import createHttpError from "http-errors";
 import { AuthRequest } from "../middlewares/authenticate";
 import BlogPost from "./blogModel";
-import { json } from "stream/consumers";
-import { createDeflate } from "zlib";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize S3 client
-// put in helper function
 const s3 = new S3({
     region: config.region,
     credentials: {
@@ -232,10 +230,38 @@ async function deleteBlog(
     return;
 }
 
+async function generateBlog(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    const { prompt } = req.body;
+    const key = config.googleKey;
+
+    const genAI = new GoogleGenerativeAI(key as string);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    if (!prompt) {
+        res.status(400).json({ message: "Prompt is required" });
+        return;
+    }
+
+    //generating blog
+    try {
+        const result = await model.generateContent(prompt);
+        const generatedContent = result.response.text();
+        res.status(200).json({ content: generatedContent });
+    } catch (error) {
+        console.error(error);
+        return next(createHttpError(500, "Error generating content"));
+    }
+}
+
 export {
     createBlogPost,
     updateBlogPost,
     listAllBlogs,
     getSingleBlog,
     deleteBlog,
+    generateBlog,
 };
