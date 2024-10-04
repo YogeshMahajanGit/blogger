@@ -174,4 +174,18 @@ async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export { createBlogPost, updateBlogPost, listAllBlogs };
+async function getSinglePost(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.id;
+
+    try {
+        const post = await BlogPost.findOne({ _id: id });
+        if (!post) {
+            return next(createHttpError(404, "Post not found"));
+        }
+
+        res.json(post);
+    } catch (error) {
+        return next(createHttpError(500, "Error while getting post"));
+    }
+}
+export { createBlogPost, updateBlogPost, listAllBlogs, getSinglePost };

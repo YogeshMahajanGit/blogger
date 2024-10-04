@@ -1,6 +1,11 @@
 import express from "express";
 import multer from "multer";
-import { createBlogPost, listAllBlogs, updateBlogPost } from "./blogController";
+import {
+    createBlogPost,
+    getSinglePost,
+    listAllBlogs,
+    updateBlogPost,
+} from "./blogController";
 import authenticate from "../middlewares/authenticate";
 const blogRouter = express.Router();
 
@@ -21,5 +26,6 @@ blogRouter.patch(
 );
 
 blogRouter.get("/", listAllBlogs);
+blogRouter.get("/:id", getSinglePost);
 
 export default blogRouter;
