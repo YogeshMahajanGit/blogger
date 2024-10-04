@@ -10,6 +10,7 @@ const _config = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION,
     googleKey: process.env.GOOGLE_API_KEY,
+    frontendDomain: process.env.FRONTEND_DOMAIN,
 };
 
 //Read only
