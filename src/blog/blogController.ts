@@ -156,7 +156,9 @@ async function updateBlogPost(
 
 async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
     try {
-        const list = await BlogPost.find(req.query).sort({ createdAt: -1 });
+        const list = await BlogPost.find(req.query)
+            .populate("blogger", "name")
+            .sort({ createdAt: -1 });
 
         // add pagination
         // let page = Number(req.query.page) || 1;
@@ -176,7 +178,11 @@ async function getSingleBlog(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
 
     try {
-        const blog = await BlogPost.findOne({ _id: id });
+        const blog = await BlogPost.findOne({ _id: id }).populate(
+            "blogger",
+            "name"
+        );
+
         if (!blog) {
             return next(createHttpError(404, "Post not found"));
         }
