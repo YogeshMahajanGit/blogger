@@ -168,7 +168,7 @@ async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
 
         // // list = list.skip(skip);
 
-        res.json({ list, length: list.length });
+        res.json(list);
     } catch (err) {
         return next(createHttpError(500, "Erorr while getting a blog"));
     }
