@@ -156,9 +156,7 @@ async function updateBlogPost(
 
 async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
     try {
-        const list = await BlogPost.find(req.query)
-            .populate("blogger", "name")
-            .sort({ createdAt: -1 });
+        const list = await BlogPost.find({}).populate("blogger", "name");
 
         // add pagination
         // let page = Number(req.query.page) || 1;
