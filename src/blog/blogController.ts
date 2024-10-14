@@ -155,16 +155,10 @@ async function updateBlogPost(
 }
 
 async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
+    // const sleep = await new Promise((resolve) => setTimeout(resolve, 7000));
+
     try {
         const list = await BlogPost.find({}).populate("blogger", "name");
-
-        // add pagination
-        // let page = Number(req.query.page) || 1;
-        // let limit = Number(req.query.limit) || 2;
-
-        // let skip = (page - 1) * limit;
-
-        // // list = list.skip(skip);
 
         res.json(list);
     } catch (err) {
