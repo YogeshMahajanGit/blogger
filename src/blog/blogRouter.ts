@@ -6,6 +6,7 @@ import {
     generateBlog,
     getSingleBlog,
     listAllBlogs,
+    listUserOnlyBlog,
     updateBlogPost,
 } from "./blogController";
 import authenticate from "../middlewares/authenticate";
@@ -33,5 +34,7 @@ blogRouter.get("/:id", getSingleBlog);
 blogRouter.delete("/:id", authenticate, deleteBlog);
 
 blogRouter.post("/generate-blog", authenticate, generateBlog);
+
+blogRouter.get("/user/:userId", listUserOnlyBlog);
 
 export default blogRouter;

@@ -156,13 +156,40 @@ async function updateBlogPost(
 
 async function listAllBlogs(req: Request, res: Response, next: NextFunction) {
     // const sleep = await new Promise((resolve) => setTimeout(resolve, 7000));
-
     try {
-        const list = await BlogPost.find({}).populate("blogger", "name");
+        const list = await BlogPost.find({})
+            .populate("blogger", "name")
+            .sort({ createdAt: -1 });
 
         res.json(list);
     } catch (err) {
         return next(createHttpError(500, "Erorr while getting a blog"));
+    }
+}
+
+async function listUserOnlyBlog(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    //Get userId
+    const userId = req.params.userId;
+
+    try {
+        const blogs = await BlogPost.find({ blogger: userId })
+            .populate("blogger", "name")
+            .sort({
+                createdAt: -1,
+            });
+
+        if (!blogs.length) {
+            res.status(404).json({ message: "You don't have any blogs" });
+            return;
+        }
+
+        res.status(200).json(blogs);
+    } catch (error) {
+        return next(createHttpError(500, "Server error while fetching blogs"));
     }
 }
 
@@ -262,4 +289,5 @@ export {
     getSingleBlog,
     deleteBlog,
     generateBlog,
+    listUserOnlyBlog,
 };
